@@ -42,7 +42,7 @@ Planning in Basecamp:
 
 ![Planning in Basecamp](images/basecamp-planning.jpg)
 
-Result in OrganicMaps:  
+Result in OruxMaps:  
 
 ![Result in OrganicMaps](images/display_oruxmaps.jpg)
 
