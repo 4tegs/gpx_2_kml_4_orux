@@ -13,13 +13,14 @@
 
 ## About ##
 
-This program is used to convert GPX files exported from Garmin Basecamp in one go into a KML file that can be imported by OruxMaps.
+This program is used to convert GPX files exported from Garmin Basecamp in one go into a KML file that can be imported by **OruxMaps**.
 
 Be aware
 
 - Basecamp uses a Garmin implementation of GPX that differs from the standard GPX in aspects like colour. To receive a full set of features, make sure you source your tracks and waypoints from Garmin Basecamp.
-- Files converted by this App won't fully support all features of Maps.me and Organic.Maps. They have implemented their own KML structure.
-- Even if the App is designed to use Garmin GPX files, it should work with standard GPX files too.
+- Even if the App is designed to use Garmin GPX files, it works with standard GPX files too.
+- Files converted by this App won't fully support all features of Maps.me and Organic.Maps. They have implemented their own KML structure. In case you want to use organicMaps, use **GPX\_2\_KML\_4\_Orga**.
+
 
 ## Use: ##
 
@@ -42,7 +43,7 @@ Planning in Basecamp:
 
 ![Planning in Basecamp](images/basecamp-planning.jpg)
 
-Result in OruxMaps:  
+Screenshots from OruxMaps:  
 
 ![Result in OrganicMaps](images/display_oruxmaps.jpg)
 
