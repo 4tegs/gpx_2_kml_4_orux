@@ -36,6 +36,17 @@ Planning is done in Garmin Basecamp.
 
 GPX\_2\_KML\_4\_Orux has no user interface. You just take your exported GPX and drag & drop it onto the exe. As a result, you have a converted KML with the same name in the same directory as the GPX. If there are any errors, you will be informed.
 
+## Example ##
+
+Planning in Basecamp:  
+
+![Planning in Basecamp](images/basecamp-planning.jpg)
+
+Result in OrganicMaps:  
+
+![Result in OrganicMaps](images/display_oruxmaps.jpg)
+
+
 
 ## Data privacy ##
 - By design XML structures as GPX and KML reach out for external servers. For example, interpreting the Garmin GPX, you will find certain html addresses in the GPX's header that support interpreting the structure.
