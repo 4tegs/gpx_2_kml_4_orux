@@ -2,7 +2,7 @@
 
 ## Version and Licence ##
 
-- Version 02/2024
+- Version v2.0 dated 11/2024
  Written by Hans Strassguetl - [https://gravelmaps.de](https://gravelmaps.de/)  
  Licenced under [https://creativecommons.org/licenses/by-sa/4.0/](https://creativecommons.org/licenses/by-sa/4.0/)  
 - Icons used are licensed under  

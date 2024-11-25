@@ -2,12 +2,13 @@
 from pathlib import Path
 import json
 import gpxpy
+import os
 import sys
-from tkinter import *
+from tkinter import * # type: ignore
 from tkinter import ttk
 from ttkthemes import ThemedTk
 import xml.etree.ElementTree as ET
-
+import keyboard
 
 # ------------------------------------------------------------------------------------------
 #  _____                         
@@ -31,7 +32,7 @@ def error_message(error, quit):
     root.eval('tk::PlaceWindow . center')
 
     mainframe = ttk.Frame(root, padding="25 25 25 25")
-    mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
+    mainframe.grid(column=0, row=0, sticky=(N, W, E, S))            # type: ignore
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
 
@@ -44,7 +45,8 @@ def error_message(error, quit):
     # .............................................................
     if error == "json_01":
         ttk.Label(mainframe, text="The configuration (JSON) is missing.").grid(column=1, row=1, sticky=W)
-
+    if error == "json_02":
+        ttk.Label(mainframe, text="The configuration (JSON) is missing.\nTry to get the default one.\nRead Readme on Github!").grid(column=1, row=1, sticky=W)
     # .............................................................
     # GPX Errors
     # .............................................................
@@ -60,7 +62,19 @@ def error_message(error, quit):
     # .............................................................
     # Paramater passing Errors
     # .............................................................
-
+    if error == "dict_01":
+        ttk.Label(mainframe, text="Error: The --dictionary argument is required.").grid(column=1, row=1, sticky=W)
+    if error == "dict_02":
+            ttk.Label(mainframe, text="Error: Unable to parse the dictionary argument provided by you.").grid(column=1, row=1, sticky=W)
+    if error == "dict_03":
+            ttk.Label(mainframe, text="Esssential JSON parameter in the command line is missing.").grid(column=1, row=1, sticky=W)
+    if error == "dict_04":
+            ttk.Label(mainframe, text="Country wasn't found in translation table from country-name to ISO code.").grid(column=1, row=1, sticky=W)
+    
+    if error == "7z_01":
+            ttk.Label(mainframe, text="7Z Program missing.").grid(column=1, row=1, sticky=W)
+    if error == "GPSBabel":
+            ttk.Label(mainframe, text="GPSBabel Program missing. Necessary to create Garmin POI.").grid(column=1, row=1, sticky=W)
 
     # .............................................................
     # Traccar Errors
@@ -69,8 +83,6 @@ def error_message(error, quit):
         ttk.Label(mainframe, text="The configuration <traccar2gpx.json> is missing.").grid(column=1, row=1, sticky=W)
         ttk.Label(mainframe, text="A new version has been created ").grid(column=1, row=2, sticky=W)
         ttk.Label(mainframe, text="YOU MUST UPDATE the created version with your credentials before you can carry on!").grid(column=1, row=3, sticky=W)
-
-
 
     for child in mainframe.winfo_children():
         child.grid_configure(padx=5, pady=5)
@@ -100,11 +112,11 @@ class IchSelbst:
     sys.executable ist der Workaround. 
     Mehr dazu hier: https://pyinstaller.org/en/stable/runtime-information.html 
 
-    self.script_with_path           ->  c:\SynologyDrive\Python\00_test\test2.py
+    self.script_with_path           ->  c:\\SynologyDrive\\Python\\00_test\\test2.py
     self.script                     ->  test2.py
     self.name                       ->  test2
-    self.path                       ->  c:\SynologyDrive\Python\00_test
-    self.path_name_without_suffix   ->  c:\SynologyDrive\Python\00_test\test2
+    self.path                       ->  c:\\SynologyDrive\\Python\\00_test
+    self.path_name_without_suffix   ->  c:\\SynologyDrive\\Python\\00_test\\test2
     '''
     def __init__(self):
         if getattr(sys, 'frozen', False):                                   # Code is running from a compiled executable
@@ -117,8 +129,20 @@ class IchSelbst:
         self.script_without_suffix      = Path(SysArg0).stem                    # Das ist der DateiName OHNE Suffix
         self.path                       = Path(SysArg0).parent                  # Das ist der Path ohne trailing \
         self.path_name_without_suffix   = str(Path(SysArg0).parent) + "\\" + Path(SysArg0).stem
-
-
+        # ----------------------------------------------------------------------------------------
+        # Here comes some code that maybe used in case the JSON file is included in the EXE file. 
+        # ----------------------------------------------------------------------------------------
+        if getattr(sys, 'frozen', False):                                   # Code is running from a compiled executable
+            try:
+                base_path = sys._MEIPASS                                    # type: ignore
+            except AttributeError:
+                base_path = os.path.abspath(".")
+            # By compiling the JSON into the package, the path uses the name of the JSON as a subfolder, 
+            # for that the Path(SysArg0).stem var needs to be added twice
+            self.data_file = base_path + "\\" + Path(SysArg0).stem + ".json\\" + Path(SysArg0).stem 
+        else:
+            self.data_file = self.path_name_without_suffix
+        # ----------------------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------------------------
 #      _ ____   ___  _   _ 
@@ -136,11 +160,19 @@ def load_json(json_file_name):
     my_script = IchSelbst()
     if json_file_name == None:
         json_file_name = my_script.path_name_without_suffix+".json"
+
     try:											
         with open(json_file_name) as f:				
             return json.load(f)						
     except FileNotFoundError:
-        error_message("json_01", False)
+        json_file_name = my_script.data_file+".json"
+        try:
+            error_message("json_02", False)
+            with open(json_file_name) as f:				
+                return json.load(f)						
+        except:
+            error_message("json_01", False)
+            sys.exit(1)
 
 # ------------------------------------------------------------------------------------------
 #   ____                      _            ____                 _       _ 
@@ -199,7 +231,6 @@ def read_gpx(file_path):
         error_message("gpx_03", True)
     return gpx, display_colors
 
-
 def make_gpx_name(gpx_in_file_name):
 # ...................................................
 # Make GPX FileName
@@ -236,6 +267,38 @@ def make_gpx_name(gpx_in_file_name):
     return gpx_file_name
 
 # ------------------------------------------------------------------------------------------
+#   ____                _           ____ ______  __
+#  / ___|_ __ ___  __ _| |_ ___    / ___|  _ \ \/ /
+# | |   | '__/ _ \/ _` | __/ _ \  | |  _| |_) \  / 
+# | |___| | |  __/ (_| | ||  __/  | |_| |  __//  \ 
+#  \____|_|  \___|\__,_|\__\___|___\____|_|  /_/\_\
+#                             |_____|              
+# ------------------------------------------------------------------------------------------
+def create_gpx_with_symbols(points, output_file, symbol):
+    '''
+    Create a Garmin-compatible GPX file with waypoints and a specified symbol.
+
+    Args:
+        points (list of dict): List of points with 'name', 'lat', and 'lon'.
+        output_file (str): Path to the output GPX file.
+        symbol (str): The symbol to use for all waypoints.
+    '''
+    # Create the root element
+    gpx = ET.Element("gpx", xmlns="http://www.topografix.com/GPX/1/1", version="1.1", creator="PythonScript")
+    
+    # Add waypoints with the specified symbol
+    for point in points:
+        wpt = ET.SubElement(gpx, "wpt", lat=str(point["lat"]), lon=str(point["lon"]))
+        name = ET.SubElement(wpt, "name")
+        name.text = point["name"]
+        sym = ET.SubElement(wpt, "sym")
+        sym.text = symbol  # Use the provided symbol for all waypoints
+    
+    # Write the GPX file
+    tree = ET.ElementTree(gpx)
+    tree.write(output_file, encoding="utf-8", xml_declaration=True)
+
+# ------------------------------------------------------------------------------------------
 #   ____                      _         ___           _                  
 #  / ___| __ _ _ __ _ __ ___ (_)_ __   |_ _|_ __  ___| |_ __ _ _ __  ____
 # | |  _ / _` | '__| '_ ` _ \| | '_ \   | || '_ \/ __| __/ _` | '_ \|_  /
@@ -264,4 +327,39 @@ class mein_gpx:
         self.gpx_path_name_without_suffix   = Path(SysArg0).parent                  # Das ist der Path ohne trailing \
         self.gpx_path_with_name_no_suffix   = str(Path(SysArg0).parent) + "\\" + Path(SysArg0).stem #  Der Pfad mit Dateinamen aber ohne den Suffix
         
+# ------------------------------------------------------------------------------------------
+#  _____ _ _          _                     _ _ _             
+# |  ___(_) | ___    | |__   __ _ _ __   __| | (_)_ __   __ _ 
+# | |_  | | |/ _ \   | '_ \ / _` | '_ \ / _` | | | '_ \ / _` |
+# |  _| | | |  __/   | | | | (_| | | | | (_| | | | | | | (_| |
+# |_|   |_|_|\___|___|_| |_|\__,_|_| |_|\__,_|_|_|_| |_|\__, |
+#               |_____|                                 |___/ 
+# ------------------------------------------------------------------------------------------
+def make_short_name(in_file_name , in_suffix ):
+# ...................................................
+# Make Short and Temp FileName
+# Only Name - no path
+# 2024 11 19
+# ...................................................
+    '''
+    Make a valid KML name, only name and suffix, no path
+
+    ### Args: 
+    - Input  :  File Name to be analyzed
+    - Returns:  File Name to be used. May be blank
+                Temp Name
+    '''
+    if in_file_name:
+        in_name = Path(in_file_name).stem      # Der Name der Datei ohne Suffix
+        short_file_name = str(in_name) + '.' + in_suffix
+        tmp_file_name = str(in_name) + '_tmp' + '.' + in_suffix
+    else:
+        short_file_name = ''
+        tmp_file_name = '1q2w3e4r5t.txt'
+    return short_file_name , tmp_file_name
+
+
+
+
+
 

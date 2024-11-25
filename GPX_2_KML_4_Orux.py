@@ -10,19 +10,19 @@ import xml.etree.ElementTree as ET
 
 # ...................................................
 # Where do I find my utils to be imported? Set your path here!
-sys.path.append("C:\\SynologyDrive\\Python\\00_import_utils")
-import utils
+sys.path.append("C:\\SynologyDrive\\Python\\00_import_h_utils")
+import h_utils                                                              # type: ignore
 # I wasn't able to find the error in my compile, but as long as I don't add the same 
 # imports as in utils, the exe breaks with an import error.
 # Duplicate imports from uitls.py:
-from pathlib import Path
-import json
-import gpxpy
-import sys
-from tkinter import *
-from tkinter import ttk
-from ttkthemes import ThemedTk
-import xml.etree.ElementTree as ET
+# from pathlib import Path
+# import json
+# import gpxpy
+# import sys
+# from tkinter import *
+# from tkinter import ttk
+# from ttkthemes import ThemedTk
+# import xml.etree.ElementTree as ET
 # ...................................................
 
 
@@ -145,11 +145,11 @@ def create_kml_from_gpx(gpx_file_path, kml_file_path):
     * Load Translation Table as a JSON
     * 
     '''
-    mein_gpx = utils.mein_gpx(gpx_file_path)
+    mein_gpx = h_utils.mein_gpx(gpx_file_path)
     gpx = mein_gpx.gpx
     display_colors = mein_gpx.display_color
 
-    translate_table = utils.load_json(json_file_name)                     # Lade deine eigene Translation Tabelle
+    translate_table = h_utils.load_json(json_file_name)                     # Lade deine eigene Translation Tabelle
     # ...........................................
     #   Loop Tracks and write to kml
     # ...........................................
@@ -256,15 +256,15 @@ if __name__ == "__main__":
     # Ansonsten setze Default Pfad auf den Pfad der Exe
     # ....................................................
     os.system('cls') 
-    my_script = utils.IchSelbst()
+    my_script = h_utils.IchSelbst()
 
     file_paths = sys.argv[1:]                   # the first argument (0) is the script itself. 1: heisst, wir haben nun in der file_paths alle anderen Argumente
-    print("\n\n  GPX_2_KML_4_Orux - convert Garmin GPX into KML for OruxMaps\n  Version 12/2023\n  Written by Hans Strassguetl - https://gravelmaps.de \n  Licenced under 'Licenced under https://creativecommons.org/licenses/by-sa/4.0/ \n  Icons used are licensed under\n    Map Icons Collection\n    Creative Commons 3.0 BY-SA\n    Author: Nicolas Mollet - https://mapicons.mapsmarker.com")
+    print("\n\n  GPX_2_KML_4_Orux - convert Garmin GPX into KML for OruxMaps\n  Version v2.0 dated 11/2024\n  Written by Hans Strassguetl - https://gravelmaps.de \n  Licenced under 'Licenced under https://creativecommons.org/licenses/by-sa/4.0/ \n  Icons used are licensed under\n    Map Icons Collection\n    Creative Commons 3.0 BY-SA\n    Author: Nicolas Mollet - https://mapicons.mapsmarker.com")
 
     # Make sure you have either set a valid GPX / KML name 
     # or make sure its clear
     # ....................................................
-    mein_gpx = utils.mein_gpx(None)
+    mein_gpx = h_utils.mein_gpx(None)
     gpx_file_name = mein_gpx.gpx_name_with_path
 
     if gpx_file_name:
@@ -275,9 +275,9 @@ if __name__ == "__main__":
         gpx_file_name = ''
         kml_file_name = ''
         json_file_name = ''
-        utils.error_message("gpx_02",True)
+        h_utils.error_message("gpx_02",True)
 
-    translate_table = utils.load_json(json_file_name)
+    translate_table = h_utils.load_json(json_file_name)
     my_track_color_dict = translate_table.get("trackcolor")         # Erhalte ein Dictionary mit allen Farbein im Format  "Magenta": "FFFE01FE"
 
     # default_line_color = my_track_color_dict.get("Default")         # Wenn keine Farbe gefunden werden kann, dann heisst der Farbname Default und ich hole die Farbe
